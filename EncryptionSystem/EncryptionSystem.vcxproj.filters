@@ -9,33 +9,45 @@
       <UniqueIdentifier>{67DA6AB6-F800-4c08-8B7A-83BB121AAD01}</UniqueIdentifier>
       <Extensions>rc;ico;cur;bmp;dlg;rc2;rct;bin;rgs;gif;jpg;jpeg;jpe;resx;tiff;tif;png;wav;mfcribbon-ms</Extensions>
     </Filter>
-    <Filter Include="소스 파일\Server">
-      <UniqueIdentifier>{98fba5d9-1fb6-40be-86d4-834208c246f8}</UniqueIdentifier>
-    </Filter>
-    <Filter Include="소스 파일\Client">
-      <UniqueIdentifier>{55c53ac3-fcf5-4d41-9f2d-ae0fb1ff8d67}</UniqueIdentifier>
-    </Filter>
     <Filter Include="소스 파일\Entry">
       <UniqueIdentifier>{c6bfa8b5-1e2a-4c5e-b502-2bd195e70196}</UniqueIdentifier>
+    </Filter>
+    <Filter Include="소스 파일\_Network">
+      <UniqueIdentifier>{8bc0abe8-8bf2-407e-9f13-8b9d5ec7bcb3}</UniqueIdentifier>
+    </Filter>
+    <Filter Include="소스 파일\_Network\Client">
+      <UniqueIdentifier>{55c53ac3-fcf5-4d41-9f2d-ae0fb1ff8d67}</UniqueIdentifier>
+    </Filter>
+    <Filter Include="소스 파일\_Network\Server">
+      <UniqueIdentifier>{98fba5d9-1fb6-40be-86d4-834208c246f8}</UniqueIdentifier>
+    </Filter>
+    <Filter Include="소스 파일\_Network\Client\_Main">
+      <UniqueIdentifier>{fea940c3-8634-4a3f-8903-bd9e2ae72d90}</UniqueIdentifier>
     </Filter>
   </ItemGroup>
   <ItemGroup>
     <ClCompile Include="Server\CalcServer.cpp">
-      <Filter>소스 파일\Server</Filter>
-    </ClCompile>
-    <ClCompile Include="Client\CalcClient.cpp">
-      <Filter>소스 파일\Client</Filter>
+      <Filter>소스 파일\_Network\Server</Filter>
     </ClCompile>
     <ClCompile Include="Main.cpp">
       <Filter>소스 파일\Entry</Filter>
     </ClCompile>
+    <ClCompile Include="Client\CalcClient.cpp">
+      <Filter>소스 파일\_Network\Client\_Main</Filter>
+    </ClCompile>
+    <ClCompile Include="Client\CalcUI.cpp">
+      <Filter>소스 파일\_Network\Client\_Main</Filter>
+    </ClCompile>
   </ItemGroup>
   <ItemGroup>
     <ClInclude Include="Server\CalcServer.h">
-      <Filter>소스 파일\Server</Filter>
+      <Filter>소스 파일\_Network\Server</Filter>
     </ClInclude>
     <ClInclude Include="Client\CalcClient.h">
-      <Filter>소스 파일\Client</Filter>
+      <Filter>소스 파일\_Network\Client\_Main</Filter>
+    </ClInclude>
+    <ClInclude Include="Client\CalcUI.h">
+      <Filter>소스 파일\_Network\Client\_Main</Filter>
     </ClInclude>
   </ItemGroup>
 </Project>

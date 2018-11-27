@@ -4,11 +4,11 @@
 #include "Server/CalcServer.h"
 
 
-void main()
+int main()
 {
 	bool IsServer;
 
-	std::cout << " 서버로 사용할 것입니까? " << std::endl;
+	std::cout << " 서버로 사용할 것입니까? ";
 	std::cin >> IsServer;
 
 	if (IsServer)
@@ -20,6 +20,6 @@ void main()
 		CalcClient calcClient = CalcClient();
 	}
 	
-	std::cout << "Application::Return" << std::endl;
-	return;
+	std::cout << "APP::Exit" << std::endl;
+	return 0;
 }
