@@ -19,7 +19,8 @@ int main()
 	{
 		CalcClient calcClient = CalcClient();
 	}
-	
+
 	std::cout << "APP::Exit" << std::endl;
+
 	return 0;
 }

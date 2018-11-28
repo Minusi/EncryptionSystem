@@ -1,4 +1,4 @@
-<?xml version="1.0" encoding="utf-8"?>
+﻿<?xml version="1.0" encoding="utf-8"?>
 <Project DefaultTargets="Build" ToolsVersion="15.0" xmlns="http://schemas.microsoft.com/developer/msbuild/2003">
   <ItemGroup Label="ProjectConfigurations">
     <ProjectConfiguration Include="Debug|Win32">
@@ -167,11 +167,13 @@
     <ClCompile Include="Client\CalcUI.cpp" />
     <ClCompile Include="Main.cpp" />
     <ClCompile Include="Server\CalcServer.cpp" />
+    <ClCompile Include="Server\UserDB.cpp" />
   </ItemGroup>
   <ItemGroup>
     <ClInclude Include="Client\CalcClient.h" />
     <ClInclude Include="Client\CalcUI.h" />
     <ClInclude Include="Server\CalcServer.h" />
+    <ClInclude Include="Server\UserDB.h" />
   </ItemGroup>
   <Import Project="$(VCTargetsPath)\Microsoft.Cpp.targets" />
   <ImportGroup Label="ExtensionTargets">

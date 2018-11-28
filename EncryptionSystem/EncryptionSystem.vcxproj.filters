@@ -38,6 +38,9 @@
     <ClCompile Include="Client\CalcUI.cpp">
       <Filter>소스 파일\_Network\Client\_Main</Filter>
     </ClCompile>
+    <ClCompile Include="Server\UserDB.cpp">
+      <Filter>소스 파일\_Network\Server</Filter>
+    </ClCompile>
   </ItemGroup>
   <ItemGroup>
     <ClInclude Include="Server\CalcServer.h">
@@ -48,6 +51,9 @@
     </ClInclude>
     <ClInclude Include="Client\CalcUI.h">
       <Filter>소스 파일\_Network\Client\_Main</Filter>
+    </ClInclude>
+    <ClInclude Include="Server\UserDB.h">
+      <Filter>소스 파일\_Network\Server</Filter>
     </ClInclude>
   </ItemGroup>
 </Project>

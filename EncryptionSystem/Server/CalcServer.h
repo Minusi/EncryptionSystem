@@ -4,7 +4,9 @@
 #include <WinSock2.h>
 
 #include "Client\CalcClient.h"
-#include "UserInfo.h"
+
+#include "UserDB.h"
+
 
 
 /*
@@ -97,7 +99,7 @@ private:
 	int SizeOfClientInfo;						//**************
 
 	char Buffer[BUFFERSIZE];					//네트워크 통신 버퍼
-
 	
-	UserInfo ConnectInfo;						//클라이언트 정보
+	UserDB UserDatabase;						//클라이언트 정보
+	LoginUserInfo ConnectInfo;					//로그인 유저 정보
 };

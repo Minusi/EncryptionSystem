@@ -124,6 +124,16 @@ void CalcServer::ParseClientData()
 
 void CalcServer::ProcessLoginFlag()
 {
+	// 로그인 여부를 검사합니다.
+	if (ConnectInfo.Authorized())
+	{
+		strcpy_s(Buffer, CalcServer::Result::LoginFlag::LOGIN.c_str());
+	}
+	else
+	{
+		strcpy_s(Buffer, CalcServer::Result::LoginFlag::NOLOGIN.c_str());
+	}
+
 	// 클라이언트로 현재 로그인 세션 유지 여부를 전송합니다.
 	if (send(ClientSock, Buffer, sizeof(Buffer), 0) == SOCKET_ERROR)
 	{
@@ -142,6 +152,8 @@ void CalcServer::ProcessUserLogin()
 	{
 		std::cout << "ERROR::RECV Fail With PW In " << __func__ << std::endl;
 	}
+
+
 
 	// 클라이언트로 로그인 결과를 전송합니다.
 	if (send(ClientSock, Buffer, sizeof(Buffer), 0) == SOCKET_ERROR)
@@ -181,6 +193,7 @@ void CalcServer::ProcessIntegerValue()
 	// 클라이언트의 값을 정수로 변환합니다.
 	int ReceivedValue = atoi(Buffer);
 	int SquareValue;
+
 	if (ConnectInfo.IsValid())
 	{
 		SquareValue = ReceivedValue * ReceivedValue;
