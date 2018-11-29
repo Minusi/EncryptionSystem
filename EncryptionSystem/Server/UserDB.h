@@ -85,8 +85,8 @@ public:
 	(
 		std::string InAttribute, 
 		char LineDelimeter, 
-		std::string OutID, 
-		std::string OutPW
+		std::string& OutID, 
+		std::string& OutPW
 	);
 	
 private:
@@ -116,18 +116,21 @@ public:
 	// UserDB의 경로 지정 오버로딩 생성자입니다.
 	UserDB(std::string InPath, int Index = 0);
 
+public:
 	// ID와 PW를 DB에 삽입합니다.
 	void InsertIDAndPW(std::string InID, std::string InPW);
 
 	// ID와 PW를 DB에서 제거합니다.
 	void RemoveIDAndPW(std::string InID);
 
+	// ID가 이미 DB에 있는 지 확인합니다.
+	bool ExistID(std::string InSearchID) const;
+
 	// ID와 PW가 DB에 있는 지 확인합니다.
 	bool FindIDAndPW(std::string InID, std::string InPW);
 
-private:
-	// ID가 이미 존재하는지 확인합니다.
-	bool ExistID(std::string InSearchID) const;
+	// 모든 ID와 PW를 출력합니다.
+	void PrintUsersInfo() const;
 
 private:
 	// 파일로부터 읽어들여온 유저 ID와 PW에 대한 자료입니다.
@@ -138,11 +141,4 @@ private:
 
 	// DB파서입니다.
 	DBParser Parser;
-};
-
-
-
-class UserSessionManager
-{
-	
 };

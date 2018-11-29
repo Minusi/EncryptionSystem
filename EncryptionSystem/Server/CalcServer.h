@@ -1,6 +1,8 @@
 ﻿#pragma once
 
 #include <iostream>
+#include <string>
+#include <cmath>
 #include <WinSock2.h>
 
 #include "Client\CalcClient.h"
@@ -16,7 +18,7 @@
  */
 class CalcServer
 {
-#define BUFFERSIZE 1024
+#define BUFFERSIZE 256
 public:
 	enum class Mode
 	{
@@ -36,8 +38,7 @@ public:
 		struct Login
 		{
 		public:
-			static std::string const IDMISMATCH;
-			static std::string const PWMISTMATCH;
+			static std::string const MISMATCH;
 			static std::string const SUCCESS;
 		};
 
@@ -55,6 +56,7 @@ public:
 			static std::string const NONVALID;
 		};
 	};
+
 private:
 	typedef sockaddr_in SOCKADDRIN;
 

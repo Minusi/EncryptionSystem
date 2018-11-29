@@ -8,7 +8,7 @@ int main()
 {
 	bool IsServer;
 
-	std::cout << " 서버로 사용할 것입니까? ";
+	std::cout << "SYSTEM::Client(0), Server(1) : ";
 	std::cin >> IsServer;
 
 	if (IsServer)

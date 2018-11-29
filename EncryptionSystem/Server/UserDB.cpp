@@ -1,4 +1,5 @@
 ﻿#include "UserDB.h"
+#include "Debug\Debug.h"
 
 #include <iostream>
 #include <fstream>
@@ -71,19 +72,22 @@ void DBParser::ParseUserInfo
 (
 	std::string InLine, 
 	char LineDelimeter,
-	std::string OutID,
-	std::string OutPW
+	std::string& OutID,
+	std::string& OutPW
 )
 {
+	// Inline 파라미터의 공백을 제거합니다.
+	auto It = std::remove(InLine.begin(), InLine.end(), ' ');
+	InLine.erase(It, InLine.end());
+
 	std::istringstream iss(InLine);
 	Attribute AttributeIterator;
 
+	//디버그 InLine 파라미터
+	//std::cout << "DEBUG::" << InLine << " " << __func__ << std::endl;
+
 	// 구분자를 통해 애트리뷰트를 가져옵니다.
 	std::getline(iss, AttributeIterator, Delimeter);
-
-	// AttributeName의 공백을 제거합니다.
-	auto It = std::remove(AttributeIterator.begin(), AttributeIterator.end(), ' ');
-	AttributeIterator.erase(It, AttributeIterator.end());
 
 	// ID일 떄 값을 저장합니다.
 	if (AttributeIterator == AttributeType::ID)
@@ -103,14 +107,22 @@ void DBParser::ParseUserInfo
 		}
 		else
 		{
-			std::cout << "ERROR::Invalid Attribute Type in" << __func__ << std::endl;
+
+#ifdef CONSOLE_DEBUG
+			std::cout << CON_PARSER_TAG << CON_WARN_TAG <<
+				"Attribute Type Does Not Match To PW" << std::endl;
+#endif // CONSOLE_DEBUG
+
 		}
-		return;
 	}
 	else
 	{
-		std::cout << "ERROR::Invalid Attribute Type in" << __func__ << std::endl;
-		return;
+
+#ifdef CONSOLE_DEBUG
+		std::cout << CON_PARSER_TAG << CON_WARN_TAG <<
+			"Attribute Type Does Not Match To ID" << std::endl;
+#endif // CONSOLE_DEBUG
+
 	}
 }
 
@@ -119,17 +131,18 @@ void DBParser::ParseUserInfo
 
 
 UserDB::UserDB() 
+	: DatabasePath("CalcUserDatabase.txt")
 {
-	UserDB("CalcUserDatabase.txt");
-}
+#ifdef CONSOLE_DEBUG
+	CON_NEWLINE;
+	std::cout << CON_DB_TAG << CON_DEBUG_TAG <<
+		__func__ << std::endl;
+#endif // CONSOLE_DEBUG
 
-UserDB::UserDB(std::string InPath, int Index) 
-	: DatabasePath(InPath)
-{
 
 	// 파일로부터 읽어올 버퍼입니다.
-	static int const MAXSIZE = 1024;
-	char Buffer[MAXSIZE];						
+	static int const MAXSIZE = 256;
+	char Buffer[MAXSIZE];
 
 	// ID와 PW를 담는 묶음 문자열입니다.
 	std::string UserInfoBundle;
@@ -139,14 +152,34 @@ UserDB::UserDB(std::string InPath, int Index)
 	std::string ResultPW;
 
 	// 파일 입력 스트림을 생성합니다.
-	std::ifstream FileStream(DatabasePath);		
+	std::ifstream FileStream;
+	FileStream.open("CalcUserDatabase.txt", std::ios::in);
+
+	// 파일이 열려있지 않으면 종료합니다.
+	if (FileStream.is_open() == false)
+	{
+		std::cout << "DBASE::ERROR::File Cannnot Open" << std::endl;
+		exit(1);
+	}
+
 	while (FileStream.getline(Buffer, MAXSIZE))
 	{
+#ifdef CON_DB_TAG 
+		std::cout << CON_DB_TAG << CON_DEBUG_TAG <<
+			"Buffer >> " << Buffer << ">> in " << __func__ << std::endl;
+#endif // !CON_DB_TAG
+
+
 		UserInfoBundle = Buffer;
-		UserInfoBundle.append(std::to_string(LineDelimeter));
+		UserInfoBundle += LineDelimeter;
 
 		if (FileStream.getline(Buffer, MAXSIZE))
 		{
+#ifdef CON_DB_TAG 
+			std::cout << CON_DB_TAG << CON_DEBUG_TAG <<
+				"Buffer >> " << Buffer << ">> in " << __func__ << std::endl;
+#endif // !CON_DB_TAG
+
 			// PW 애트리뷰트 및 값을 추가합니다.
 			UserInfoBundle.append(Buffer);
 
@@ -154,7 +187,9 @@ UserDB::UserDB(std::string InPath, int Index)
 			Parser.ParseUserInfo(UserInfoBundle, LineDelimeter, ResultID, ResultPW);
 
 			// 메모리에 올립니다.
-			UsersInfo.insert(ResultID, ResultPW);
+			InsertIDAndPW(ResultID, ResultPW);
+
+			PrintUsersInfo();
 		}
 	}
 }
@@ -169,7 +204,7 @@ void UserDB::InsertIDAndPW(std::string InID, std::string InPW)
 	}
 
 	// 없으면 삽입합니다.
-	UsersInfo.insert(InID, InPW);
+	UsersInfo.insert(std::make_pair(InID, InPW));
 }
 
 void UserDB::RemoveIDAndPW(std::string InID)
@@ -181,16 +216,56 @@ void UserDB::RemoveIDAndPW(std::string InID)
 		false;
 	}
 
-	// 없으면 제거합니다.
+	// 있으면 제거합니다.
 	UsersInfo.erase(InID);
 }
 
 bool UserDB::FindIDAndPW(std::string InID, std::string InPW)
 {
-	if (UsersInfo.at(InID) == InPW)
+	// 유저가 입력한 ID값으로 찾습니다.
+	auto It = UsersInfo.find(InID);
+	if (It != UsersInfo.end())
 	{
-		// TODO : 18년 11월 29일 자료구조를 도와주다 깜빡하다.
+		// 유저가 입력한 값과 DB의 PW값이 같은지 확인합니다.
+		if (It->second == InPW)
+		{
+			return true;
+		}
+		else
+		{
+
+#ifdef CONSOLE_DEBUG
+			std::cout << CON_DB_TAG << CON_WARN_TAG <<
+				"PW Is Not Same In" << __func__ << std::endl;
+#endif // CONSOLE_DEBUG
+			return false;
+		}
 	}
+	else
+	{
+
+#ifdef CONSOLE_DEBUG
+		std::cout << CON_DB_TAG << CON_WARN_TAG <<
+			"ID Is Not Same In" << __func__ << std::endl;
+#endif // CONSOLE_DEBUG
+
+	}
+	return false;
+}
+
+void UserDB::PrintUsersInfo() const
+{
+#ifdef CONSOLE_DEBUG
+	std::cout << CON_DB_TAG << CON_DEBUG_TAG << __func__ << std::endl;
+
+	for (auto It = UsersInfo.begin(); It != UsersInfo.end(); ++It)
+	{
+		std::cout << It->first << "\t";
+		std::cout << It->second << std::endl;
+	}
+
+#endif // CONSOLE_DEBUG
+
 }
 
 bool UserDB::ExistID(std::string InSearchID) const

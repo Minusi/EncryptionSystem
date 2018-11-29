@@ -1,9 +1,11 @@
 ﻿#pragma once
 
-#include <iostream>
 #include <stdlib.h>
 #include <WinSock2.h>
+#include <iostream>
+#include <string>
 #include <memory>
+#include <cstdio>
 
 #include "CalcUI.h"
 #include "Server\CalcServer.h"
@@ -11,7 +13,7 @@
 
 class CalcClient
 {
-#define BUFFERSIZE 1024
+#define BUFFERSIZE 256
 public:
 	enum class Mode
 	{
