@@ -27,11 +27,29 @@
     <Filter Include="소스 파일\Debug">
       <UniqueIdentifier>{9959fe53-c3b8-4998-855f-a19f2d8d3f70}</UniqueIdentifier>
     </Filter>
+    <Filter Include="소스 파일\Encyption">
+      <UniqueIdentifier>{92ba320e-5bc6-42d3-9d68-3c195c1a59ef}</UniqueIdentifier>
+    </Filter>
+    <Filter Include="소스 파일\_Network\Server\_Main">
+      <UniqueIdentifier>{8fb8c3f5-a558-44aa-806c-d832ba006569}</UniqueIdentifier>
+    </Filter>
+    <Filter Include="소스 파일\_Network\Server\_DB">
+      <UniqueIdentifier>{1b92144a-6ca7-435f-a189-32e163cc8576}</UniqueIdentifier>
+    </Filter>
+    <Filter Include="소스 파일\Encyption\_Main">
+      <UniqueIdentifier>{60e46453-0637-430a-9d8a-10f2d95cc507}</UniqueIdentifier>
+    </Filter>
+    <Filter Include="소스 파일\Encyption\Symmetric">
+      <UniqueIdentifier>{fbb9ec0e-5fe9-4e44-8543-0e57b021737b}</UniqueIdentifier>
+    </Filter>
+    <Filter Include="소스 파일\Encyption\DH">
+      <UniqueIdentifier>{80075f72-e64a-4139-bf8d-aa3e691fbd70}</UniqueIdentifier>
+    </Filter>
+    <Filter Include="소스 파일\Encyption\RSA">
+      <UniqueIdentifier>{ea88c37f-dd05-429c-8fec-1fb0fc71576f}</UniqueIdentifier>
+    </Filter>
   </ItemGroup>
   <ItemGroup>
-    <ClCompile Include="Server\CalcServer.cpp">
-      <Filter>소스 파일\_Network\Server</Filter>
-    </ClCompile>
     <ClCompile Include="Main.cpp">
       <Filter>소스 파일\_Entry</Filter>
     </ClCompile>
@@ -41,25 +59,61 @@
     <ClCompile Include="Client\CalcUI.cpp">
       <Filter>소스 파일\_Network\Client\_Main</Filter>
     </ClCompile>
+    <ClCompile Include="Server\CalcServer.cpp">
+      <Filter>소스 파일\_Network\Server\_Main</Filter>
+    </ClCompile>
     <ClCompile Include="Server\UserDB.cpp">
-      <Filter>소스 파일\_Network\Server</Filter>
+      <Filter>소스 파일\_Network\Server\_DB</Filter>
+    </ClCompile>
+    <ClCompile Include="Encryption\Encryptor.cpp">
+      <Filter>소스 파일\Encyption\_Main</Filter>
+    </ClCompile>
+    <ClCompile Include="Encryption\RSA\RSAEncryption.cpp">
+      <Filter>소스 파일\Encyption\RSA</Filter>
+    </ClCompile>
+    <ClCompile Include="Encryption\DH\DHEncryption.cpp">
+      <Filter>소스 파일\Encyption\DH</Filter>
+    </ClCompile>
+    <ClCompile Include="NetBase.cpp">
+      <Filter>소스 파일\_Network</Filter>
+    </ClCompile>
+    <ClCompile Include="Encryption\EncryptionBase.cpp">
+      <Filter>소스 파일\Encyption</Filter>
     </ClCompile>
   </ItemGroup>
   <ItemGroup>
-    <ClInclude Include="Server\CalcServer.h">
-      <Filter>소스 파일\_Network\Server</Filter>
-    </ClInclude>
     <ClInclude Include="Client\CalcClient.h">
       <Filter>소스 파일\_Network\Client\_Main</Filter>
     </ClInclude>
     <ClInclude Include="Client\CalcUI.h">
       <Filter>소스 파일\_Network\Client\_Main</Filter>
     </ClInclude>
-    <ClInclude Include="Server\UserDB.h">
-      <Filter>소스 파일\_Network\Server</Filter>
-    </ClInclude>
     <ClInclude Include="Debug\Debug.h">
       <Filter>소스 파일\Debug</Filter>
+    </ClInclude>
+    <ClInclude Include="Server\CalcServer.h">
+      <Filter>소스 파일\_Network\Server\_Main</Filter>
+    </ClInclude>
+    <ClInclude Include="Server\UserDB.h">
+      <Filter>소스 파일\_Network\Server\_DB</Filter>
+    </ClInclude>
+    <ClInclude Include="Encryption\Encryptor.h">
+      <Filter>소스 파일\Encyption\_Main</Filter>
+    </ClInclude>
+    <ClInclude Include="Encryption\RSA\RSAEncryption.h">
+      <Filter>소스 파일\Encyption\RSA</Filter>
+    </ClInclude>
+    <ClInclude Include="Encryption\IEncryptable.h">
+      <Filter>소스 파일\Encyption\_Main</Filter>
+    </ClInclude>
+    <ClInclude Include="Encryption\DH\DHEncryption.h">
+      <Filter>소스 파일\Encyption\DH</Filter>
+    </ClInclude>
+    <ClInclude Include="NetBase.h">
+      <Filter>소스 파일\_Network</Filter>
+    </ClInclude>
+    <ClInclude Include="Encryption\EncryptionBase.h">
+      <Filter>소스 파일\Encyption</Filter>
     </ClInclude>
   </ItemGroup>
 </Project>

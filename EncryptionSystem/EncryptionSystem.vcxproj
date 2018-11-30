@@ -98,12 +98,14 @@
       <SDLCheck>true</SDLCheck>
       <PreprocessorDefinitions>WIN32;_DEBUG;_CONSOLE;%(PreprocessorDefinitions);CONSOLE_DEBUG</PreprocessorDefinitions>
       <ConformanceMode>true</ConformanceMode>
-      <AdditionalIncludeDirectories>$(ProjectDir);%(AdditionalIncludeDirectories)</AdditionalIncludeDirectories>
+      <AdditionalIncludeDirectories>C:\Users\Utsuho\Desktop\General\CppSpace\CppLibraries\cryptopp700\Win32\Output\Debug;$(ProjectDir);C:\Users\Utsuho\Desktop\General\CppSpace\CppLibraries;%(AdditionalIncludeDirectories)</AdditionalIncludeDirectories>
+      <RuntimeLibrary>MultiThreadedDebug</RuntimeLibrary>
     </ClCompile>
     <Link>
       <SubSystem>Console</SubSystem>
       <GenerateDebugInformation>true</GenerateDebugInformation>
-      <AdditionalDependencies>ws2_32.lib;%(AdditionalDependencies)</AdditionalDependencies>
+      <AdditionalDependencies>ws2_32.lib;cryptlib.lib;%(AdditionalDependencies)</AdditionalDependencies>
+      <AdditionalLibraryDirectories>C:\Users\Utsuho\Desktop\General\CppSpace\CppLibraries\cryptopp700\Win32\Output\Debug</AdditionalLibraryDirectories>
     </Link>
   </ItemDefinitionGroup>
   <ItemDefinitionGroup Condition="'$(Configuration)|$(Platform)'=='Debug|x64'">
@@ -114,12 +116,14 @@
       <SDLCheck>true</SDLCheck>
       <PreprocessorDefinitions>_DEBUG;_CONSOLE;%(PreprocessorDefinitions);CONSOLE_DEBUG</PreprocessorDefinitions>
       <ConformanceMode>true</ConformanceMode>
-      <AdditionalIncludeDirectories>$(ProjectDir);%(AdditionalIncludeDirectories)</AdditionalIncludeDirectories>
+      <AdditionalIncludeDirectories>C:\Users\Utsuho\Desktop\General\CppSpace\CppLibraries\cryptopp700\x64\Output\Debug;$(ProjectDir);C:\Users\Utsuho\Desktop\General\CppSpace\CppLibraries;%(AdditionalIncludeDirectories)</AdditionalIncludeDirectories>
+      <RuntimeLibrary>MultiThreadedDebug</RuntimeLibrary>
     </ClCompile>
     <Link>
       <SubSystem>Console</SubSystem>
       <GenerateDebugInformation>true</GenerateDebugInformation>
-      <AdditionalDependencies>ws2_32.lib;%(AdditionalDependencies)</AdditionalDependencies>
+      <AdditionalDependencies>ws2_32.lib;cryptlib.lib;%(AdditionalDependencies)</AdditionalDependencies>
+      <AdditionalLibraryDirectories>C:\Users\Utsuho\Desktop\General\CppSpace\CppLibraries\cryptopp700\x64\Output\Debug</AdditionalLibraryDirectories>
     </Link>
   </ItemDefinitionGroup>
   <ItemDefinitionGroup Condition="'$(Configuration)|$(Platform)'=='Release|Win32'">
@@ -132,14 +136,16 @@
       <SDLCheck>true</SDLCheck>
       <PreprocessorDefinitions>WIN32;NDEBUG;_CONSOLE;%(PreprocessorDefinitions)</PreprocessorDefinitions>
       <ConformanceMode>true</ConformanceMode>
-      <AdditionalIncludeDirectories>$(ProjectDir);%(AdditionalIncludeDirectories)</AdditionalIncludeDirectories>
+      <AdditionalIncludeDirectories>C:\Users\Utsuho\Desktop\General\CppSpace\CppLibraries\cryptopp700\Win32\Output\Release;$(ProjectDir);C:\Users\Utsuho\Desktop\General\CppSpace\CppLibraries;%(AdditionalIncludeDirectories)</AdditionalIncludeDirectories>
+      <RuntimeLibrary>MultiThreaded</RuntimeLibrary>
     </ClCompile>
     <Link>
       <SubSystem>Console</SubSystem>
       <EnableCOMDATFolding>true</EnableCOMDATFolding>
       <OptimizeReferences>true</OptimizeReferences>
       <GenerateDebugInformation>true</GenerateDebugInformation>
-      <AdditionalDependencies>ws2_32.lib;%(AdditionalDependencies)</AdditionalDependencies>
+      <AdditionalDependencies>ws2_32.lib;cryptlib.lib;%(AdditionalDependencies)</AdditionalDependencies>
+      <AdditionalLibraryDirectories>C:\Users\Utsuho\Desktop\General\CppSpace\CppLibraries\cryptopp700\Win32\Output\Release;%(AdditionalLibraryDirectories)</AdditionalLibraryDirectories>
     </Link>
   </ItemDefinitionGroup>
   <ItemDefinitionGroup Condition="'$(Configuration)|$(Platform)'=='Release|x64'">
@@ -152,20 +158,27 @@
       <SDLCheck>true</SDLCheck>
       <PreprocessorDefinitions>NDEBUG;_CONSOLE;%(PreprocessorDefinitions)</PreprocessorDefinitions>
       <ConformanceMode>true</ConformanceMode>
-      <AdditionalIncludeDirectories>$(ProjectDir);%(AdditionalIncludeDirectories)</AdditionalIncludeDirectories>
+      <AdditionalIncludeDirectories>C:\Users\Utsuho\Desktop\General\CppSpace\CppLibraries\cryptopp700\x64\Output\Release;$(ProjectDir);C:\Users\Utsuho\Desktop\General\CppSpace\CppLibraries;%(AdditionalIncludeDirectories)</AdditionalIncludeDirectories>
+      <RuntimeLibrary>MultiThreaded</RuntimeLibrary>
     </ClCompile>
     <Link>
       <SubSystem>Console</SubSystem>
       <EnableCOMDATFolding>true</EnableCOMDATFolding>
       <OptimizeReferences>true</OptimizeReferences>
       <GenerateDebugInformation>true</GenerateDebugInformation>
-      <AdditionalDependencies>ws2_32.lib;%(AdditionalDependencies)</AdditionalDependencies>
+      <AdditionalDependencies>ws2_32.lib;cryptlib.lib;%(AdditionalDependencies)</AdditionalDependencies>
+      <AdditionalLibraryDirectories>C:\Users\Utsuho\Desktop\General\CppSpace\CppLibraries\cryptopp700\x64\Output\Release;%(AdditionalLibraryDirectories)</AdditionalLibraryDirectories>
     </Link>
   </ItemDefinitionGroup>
   <ItemGroup>
     <ClCompile Include="Client\CalcClient.cpp" />
     <ClCompile Include="Client\CalcUI.cpp" />
+    <ClCompile Include="Encryption\DH\DHEncryption.cpp" />
+    <ClCompile Include="Encryption\EncryptionBase.cpp" />
+    <ClCompile Include="Encryption\Encryptor.cpp" />
+    <ClCompile Include="Encryption\RSA\RSAEncryption.cpp" />
     <ClCompile Include="Main.cpp" />
+    <ClCompile Include="NetBase.cpp" />
     <ClCompile Include="Server\CalcServer.cpp" />
     <ClCompile Include="Server\UserDB.cpp" />
   </ItemGroup>
@@ -173,6 +186,12 @@
     <ClInclude Include="Client\CalcClient.h" />
     <ClInclude Include="Client\CalcUI.h" />
     <ClInclude Include="Debug\Debug.h" />
+    <ClInclude Include="Encryption\DH\DHEncryption.h" />
+    <ClInclude Include="Encryption\EncryptionBase.h" />
+    <ClInclude Include="Encryption\Encryptor.h" />
+    <ClInclude Include="Encryption\IEncryptable.h" />
+    <ClInclude Include="Encryption\RSA\RSAEncryption.h" />
+    <ClInclude Include="NetBase.h" />
     <ClInclude Include="Server\CalcServer.h" />
     <ClInclude Include="Server\UserDB.h" />
   </ItemGroup>

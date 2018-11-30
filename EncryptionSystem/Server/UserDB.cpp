@@ -109,7 +109,7 @@ void DBParser::ParseUserInfo
 		{
 
 #ifdef CONSOLE_DEBUG
-			std::cout << CON_PARSER_TAG << CON_WARN_TAG <<
+			std::cout << CON_PARSER_TAG << CON_ALARM_TAG <<
 				"Attribute Type Does Not Match To PW" << std::endl;
 #endif // CONSOLE_DEBUG
 
@@ -119,7 +119,7 @@ void DBParser::ParseUserInfo
 	{
 
 #ifdef CONSOLE_DEBUG
-		std::cout << CON_PARSER_TAG << CON_WARN_TAG <<
+		std::cout << CON_PARSER_TAG << CON_ALARM_TAG <<
 			"Attribute Type Does Not Match To ID" << std::endl;
 #endif // CONSOLE_DEBUG
 
@@ -235,7 +235,7 @@ bool UserDB::FindIDAndPW(std::string InID, std::string InPW)
 		{
 
 #ifdef CONSOLE_DEBUG
-			std::cout << CON_DB_TAG << CON_WARN_TAG <<
+			std::cout << CON_DB_TAG << CON_ALARM_TAG <<
 				"PW Is Not Same In" << __func__ << std::endl;
 #endif // CONSOLE_DEBUG
 			return false;
@@ -245,7 +245,7 @@ bool UserDB::FindIDAndPW(std::string InID, std::string InPW)
 	{
 
 #ifdef CONSOLE_DEBUG
-		std::cout << CON_DB_TAG << CON_WARN_TAG <<
+		std::cout << CON_DB_TAG << CON_ALARM_TAG <<
 			"ID Is Not Same In" << __func__ << std::endl;
 #endif // CONSOLE_DEBUG
 

@@ -5,20 +5,22 @@
 #include <cmath>
 #include <WinSock2.h>
 
-#include "Client\CalcClient.h"
 
+#include "NetBase.h"
+#include "Client\CalcClient.h"
 #include "UserDB.h"
+#include "Encryption\Encryptor.h"
 
 
 
 /*
  * 계산 서버 클래스는 클라이언트와의 TCP 통신을 제공하고
- * 전체 통신 루프를 제공합니다.
+ * 전체 통신 루프를 제공합니다. 이것은 명백히 단일 책임 원칙에 위배되지만
+ * 이것을 위반해서라도 빠르게 끝내고 싶다는 점에 대해서 양해를 부탁드립니다.
  * 다른 클래스들에 의존하여 계산 기능, 암호화 기능, 정보 저장 기능을 구현합니다
  */
 class CalcServer
 {
-#define BUFFERSIZE 256
 public:
 	enum class Mode
 	{
@@ -93,15 +95,28 @@ public:
 	// 클라이언트에서 보내온 계산해야할 정수값을 처리합니다.
 	void ProcessIntegerValue();
 
+
+
 private:
-	// 윈도우 TCP 변수
+	/////////////////////
+	// 윈도우 TCP 변수 //
+	/////////////////////
 	SOCKET ServerSock, ClientSock;				//**************
 	WSADATA WSAData;							//클라이언트 및
 	SOCKADDRIN ServerSockInfo, ClientSockInfo;	//서버 소켓 센션
 	int SizeOfClientInfo;						//**************
 
-	char Buffer[BUFFERSIZE];					//네트워크 통신 버퍼
+	NetBuffer Buffer;					//네트워크 통신 버퍼
 	
+	///////////////////////
+	// 유저 데이터베이스 //
+	///////////////////////
 	UserDB UserDatabase;						//클라이언트 정보
 	LoginUserInfo ConnectInfo;					//로그인 유저 정보
+
+	//////////////////////
+	// 통신 암호화 모듈 //
+	//////////////////////
+	std::unique_ptr<Encryptor> EncryptorPtr;
+	
 };

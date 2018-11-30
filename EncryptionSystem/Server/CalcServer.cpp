@@ -3,6 +3,7 @@
 
 
 CalcServer::CalcServer()
+	:EncryptorPtr(new Encryptor())
 {
 	Init();
 }
@@ -293,7 +294,7 @@ void CalcServer::ProcessIntegerValue()
 	int ReceivedValue = atoi(Buffer);
 	int SquareValue;
 
-	SquareValue = std::pow(ReceivedValue, 2);
+	SquareValue = static_cast<int>(std::pow(ReceivedValue, 2));
 
 	// 문자열 값이 유효한지 아닌지 검사하고 그 결과를 기록합니다.
 	std::string StringValue = std::to_string(SquareValue);

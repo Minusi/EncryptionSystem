@@ -7,6 +7,7 @@
 #include <memory>
 #include <cstdio>
 
+#include "NetBase.h"
 #include "CalcUI.h"
 #include "Server\CalcServer.h"
 
@@ -65,11 +66,11 @@ private:
 	WSADATA WSAData;						//클라이언트 소켓 섹션
 	SOCKADDRIN ClientSockInfo;				//********************
 
-	int ClientPort;							//******************
+	unsigned short ClientPort;				//******************
 											//네트워크 접속 섹션
 	std::string ServerIP;					//******************
 
-	char Buffer[BUFFERSIZE];				//네트워크 통신 버퍼
+	NetBuffer Buffer;						//네트워크 통신 버퍼
 
 	std::shared_ptr<CalcUI> pClientUI;		//클라이언트 UI
 	Mode CurrentMode;						//클라이언트 현재 모드

@@ -13,11 +13,11 @@ int main()
 
 	if (IsServer)
 	{
-		CalcServer calcServer = CalcServer();
+		//CalcServer calcServer = CalcServer();
 	}
 	else
 	{
-		CalcClient calcClient = CalcClient();
+		//CalcClient calcClient = CalcClient();
 	}
 
 	std::cout << "APP::Exit" << std::endl;
