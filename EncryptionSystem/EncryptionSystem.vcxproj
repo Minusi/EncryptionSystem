@@ -177,8 +177,10 @@
     <ClCompile Include="Encryption\EncryptionBase.cpp" />
     <ClCompile Include="Encryption\Encryptor.cpp" />
     <ClCompile Include="Encryption\RSA\RSAEncryption.cpp" />
+    <ClCompile Include="Encryption\Symmetric\AESEncryption.cpp" />
     <ClCompile Include="Main.cpp" />
     <ClCompile Include="NetBase.cpp" />
+    <ClCompile Include="NetMessage.cpp" />
     <ClCompile Include="Server\CalcServer.cpp" />
     <ClCompile Include="Server\UserDB.cpp" />
   </ItemGroup>
@@ -191,6 +193,7 @@
     <ClInclude Include="Encryption\Encryptor.h" />
     <ClInclude Include="Encryption\IEncryptable.h" />
     <ClInclude Include="Encryption\RSA\RSAEncryption.h" />
+    <ClInclude Include="Encryption\Symmetric\AESEncryption.h" />
     <ClInclude Include="NetBase.h" />
     <ClInclude Include="Server\CalcServer.h" />
     <ClInclude Include="Server\UserDB.h" />

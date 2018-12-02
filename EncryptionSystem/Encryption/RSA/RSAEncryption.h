@@ -5,7 +5,7 @@
 #include <cryptopp700\rsa.h>
 #include <cryptopp700\osrng.h>
 
-#include "Encryption\IEncryptable.h"
+#include "Encryption\EncryptionBase.h"
 
 
 
@@ -13,7 +13,7 @@
  * RSAEncryption 클래스는 RSA 암호 알고리즘을 사용하여
  * 주어진 평문을 암호화하고 비문을 복호화하는 클래스입니다.
  */
-class RSAEncryption : public IEncryptable
+class RSAEncryption : public EncryptionBase
 {
 public:
 	//RSAEncryption 생성자입니다.

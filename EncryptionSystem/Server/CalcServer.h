@@ -3,13 +3,14 @@
 #include <iostream>
 #include <string>
 #include <cmath>
+#include <memory>
 #include <WinSock2.h>
 
 
+#include "Encryption\Encryptor.h"
 #include "NetBase.h"
 #include "Client\CalcClient.h"
 #include "UserDB.h"
-#include "Encryption\Encryptor.h"
 
 
 
@@ -27,12 +28,14 @@ public:
 		NONE, CLIENT_LOGIN_FLAG, CLIENT_LOGIN, CLIENT_SIGNUP, CLIENT_CALC
 	};
 
-	struct Result
+	struct Respond
 	{
 	public:
+		Respond() = delete;
 		struct LoginFlag
 		{
 		public:
+			LoginFlag() = delete;
 			static std::string const NOLOGIN;
 			static std::string const LOGIN;
 		};
@@ -40,6 +43,7 @@ public:
 		struct Login
 		{
 		public:
+			Login() = delete;
 			static std::string const MISMATCH;
 			static std::string const SUCCESS;
 		};
@@ -47,6 +51,7 @@ public:
 		struct SignUp
 		{
 		public:
+			SignUp() = delete;
 			static std::string const IDALREADY;
 			static std::string const SUCCESS;
 		};
@@ -54,8 +59,17 @@ public:
 		struct Calc
 		{
 		public:
+			Calc() = delete;
 			static std::string const SUCCESS;
 			static std::string const NONVALID;
+		};
+
+		struct Encrypt
+		{
+		public:
+			Encrypt() = delete;
+			static std::string const ACCEPT;
+			static std::string const REJECT;
 		};
 	};
 
@@ -69,6 +83,10 @@ public:
 	// 계산 서버의 소멸자입니다. 내부적으로 Finalize()를 수행합니다.
 	~CalcServer();
 
+	// 클라이언트 소켓에 대한 참조를 반환합니다.
+	const SOCKET* GetClientSocket();
+
+private:
 	// 소켓 통신을 위한 초기화를 수행합니다.
 	void Init();
 
@@ -94,8 +112,9 @@ public:
 
 	// 클라이언트에서 보내온 계산해야할 정수값을 처리합니다.
 	void ProcessIntegerValue();
-
-
+	
+	// 클라이언트에서 보내온 암호화 방ㅇ식에 대해 처리합니다.
+	void ProcessEncryptMode();
 
 private:
 	/////////////////////
@@ -106,7 +125,7 @@ private:
 	SOCKADDRIN ServerSockInfo, ClientSockInfo;	//서버 소켓 센션
 	int SizeOfClientInfo;						//**************
 
-	NetBuffer Buffer;					//네트워크 통신 버퍼
+	char Buffer[BUFFERSIZE];					//네트워크 통신 버퍼
 	
 	///////////////////////
 	// 유저 데이터베이스 //
@@ -117,6 +136,7 @@ private:
 	//////////////////////
 	// 통신 암호화 모듈 //
 	//////////////////////
-	std::unique_ptr<Encryptor> EncryptorPtr;
+	std::unique_ptr<class Encryptor> ServerEncryptor;
+	bool bActiveEncrypt;
 	
 };

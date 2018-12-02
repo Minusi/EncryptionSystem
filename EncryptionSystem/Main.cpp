@@ -3,6 +3,7 @@
 #include "Client/CalcClient.h"
 #include "Server/CalcServer.h"
 
+#include "NetBase.h"
 
 int main()
 {
@@ -13,11 +14,11 @@ int main()
 
 	if (IsServer)
 	{
-		//CalcServer calcServer = CalcServer();
+		CalcServer();
 	}
 	else
 	{
-		//CalcClient calcClient = CalcClient();
+		CalcClient();
 	}
 
 	std::cout << "APP::Exit" << std::endl;

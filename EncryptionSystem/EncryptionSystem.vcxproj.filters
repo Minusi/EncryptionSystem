@@ -80,6 +80,12 @@
     <ClCompile Include="Encryption\EncryptionBase.cpp">
       <Filter>소스 파일\Encyption</Filter>
     </ClCompile>
+    <ClCompile Include="NetMessage.cpp">
+      <Filter>소스 파일\_Network</Filter>
+    </ClCompile>
+    <ClCompile Include="Encryption\Symmetric\AESEncryption.cpp">
+      <Filter>소스 파일\Encyption\Symmetric</Filter>
+    </ClCompile>
   </ItemGroup>
   <ItemGroup>
     <ClInclude Include="Client\CalcClient.h">
@@ -114,6 +120,9 @@
     </ClInclude>
     <ClInclude Include="Encryption\EncryptionBase.h">
       <Filter>소스 파일\Encyption</Filter>
+    </ClInclude>
+    <ClInclude Include="Encryption\Symmetric\AESEncryption.h">
+      <Filter>소스 파일\Encyption\Symmetric</Filter>
     </ClInclude>
   </ItemGroup>
 </Project>

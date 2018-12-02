@@ -21,6 +21,7 @@ void CalcUI::PrintMainUI() const
 		"=         2 . S I G N   U P                =\n"
 		"=         3 . C A L C U L A T E            =\n"
 		"=         4 . Q U I T                      =\n"
+		"=         5 . E N C R Y P T                =\n"
 		"============================================\n"
 		"\n" 
 		<<std::endl;
@@ -53,6 +54,28 @@ void CalcUI::PrintSquareUI() const
 		"============================================\n"
 		"=       Input Number To Get Number^2       =\n"
 		"============================================\n"
+		<< std::endl;
+}
+
+void CalcUI::PrintEncryptUI() const
+{
+	system("cls");
+	std::cout <<
+		"============================================\n"
+		"=      Input Number To Encrypt Packet      =\n"
+		"============================================\n"
+		"\n"
+		"============================================\n"
+		"=         S   E   R   V   I   C   E         \n"
+		"============================================\n"
+		"=         1 . N O N E                      =\n"
+		"=         2 . A E S                        =\n"
+		"=         3 . D H                          =\n"
+		"=         5 . R S A                        =\n"
+		"=         6 . O P E N S S L                =\n"
+		"=         7 . E X I T                      =\n"
+		"============================================\n"
+		"\n"
 		<< std::endl;
 }
 

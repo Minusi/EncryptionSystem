@@ -7,6 +7,7 @@ CalcClient::CalcClient()
 	, ServerIP("127.0.0.1")
 	, pClientUI(CalcUI::GetInstance())
 	, CurrentMode(Mode::NONE)
+	, bActiveEncrypt(false)
 {
 	//TODO : 현재는 디폴트가 로컬호스트이지만 나중에 nullptr로 바꾸고 다른 입력받을 수단을 생성할 것
 	Init();
@@ -31,8 +32,8 @@ void CalcClient::Init()
 		return;
 	}
 
-	ClientSocket = socket(AF_INET, SOCK_STREAM, IPPROTO_TCP);
-	if (ClientSocket == INVALID_SOCKET)
+	ServerSocket = socket(AF_INET, SOCK_STREAM, IPPROTO_TCP);
+	if (ServerSocket == INVALID_SOCKET)
 	{
 		std::cout << "ERROR::클라이언트 소켓 생성 실패 at socket() " << std::endl;
 		return;
@@ -61,7 +62,7 @@ void CalcClient::Init()
 	inet_pton(AF_INET, ServerIP.c_str(), &ClientSockInfo.sin_addr.S_un.S_addr);
 
 	// 서버와 클라이언트 연결
-	if (connect(ClientSocket, (SOCKADDR*)&ClientSockInfo, sizeof(ClientSockInfo)) == SOCKET_ERROR)
+	if (connect(ServerSocket, (SOCKADDR*)&ClientSockInfo, sizeof(ClientSockInfo)) == SOCKET_ERROR)
 	{
 		std::cout << "ERROR::서버 접속 실패 at connect() " << std::endl;
 		return;
@@ -70,11 +71,15 @@ void CalcClient::Init()
 	MainLoop();
 }
 
+
+
 void CalcClient::Finalize()
 {
-	closesocket(ClientSocket);
+	closesocket(ServerSocket);
 	WSACleanup();
 }
+
+
 
 void CalcClient::MainLoop()
 {
@@ -86,25 +91,33 @@ void CalcClient::MainLoop()
 	}
 }
 
+
+
 void CalcClient::ProcessMode()
 {
 	if (CurrentMode == Mode::MAIN)
 	{
 		ProcessMainMode();
 	}
-	else if (CurrentMode == Mode::Login)
+	else if (CurrentMode == Mode::LOGIN)
 	{
 		ProcessLoginMode();
 	}
-	else if (CurrentMode == Mode::SignUp)
+	else if (CurrentMode == Mode::SIGNUP)
 	{
 		ProcessSignUpMode();
 	}
-	else if (CurrentMode == Mode::Calc)
+	else if (CurrentMode == Mode::CALC)
 	{
 		ProcessCalcMode();
 	}
+	else if (CurrentMode == Mode::ENCRYPT)
+	{
+		ProcessEncryptMode();
+	}
 }
+
+
 
 void CalcClient::ProcessMainMode()
 {
@@ -113,112 +126,107 @@ void CalcClient::ProcessMainMode()
 
 	enum class Select
 	{
-		NONE, LOGIN, SIGNUP, CALC, QUIT
+		NONE, LOGIN, SIGNUP, CALC, QUIT, ENCRYPT
 	};
 	int value;
 	std::cin >> value;
 
 	Select SelectValue = static_cast<Select>(value);
 	
+
+
 	// 로그인 버튼을 눌렀을 때의 동작입니다.
 	if (SelectValue == Select::LOGIN)
 	{
-		strcpy_s(Buffer, CalcClient::Request::LOGINFLAG.c_str());
-
 		// 서버에게 로그인 정보를 달라고 요청합니다.
-		if (send(ClientSocket, Buffer, sizeof(Buffer), 0) == SOCKET_ERROR)
-		{
-			std::cout << "ERROR::SEND Fail In " << __func__ << std::endl;
-			exit(1);
-		}
+		strcpy_s(Buffer, CalcClient::Request::LOGINFLAG.c_str());
+		SendToServer();
 
 		// 서버로부터 로그인 정보를 받아옵니다.
-		if (recv(ClientSocket, Buffer, sizeof(Buffer), 0) == SOCKET_ERROR)
-		{
-			std::cout << "ERROR::RECV Fail In " << __func__ << std::endl;
-			exit(1);
-		}
+		RecvFromServer();
 
 		// 로그인 정보에 대한 파싱을 수행합니다.
-		if ((strcmp(Buffer, CalcServer::Result::LoginFlag::NOLOGIN.c_str())) == 0)
+		if ((strcmp(Buffer, CalcServer::Respond::LoginFlag::NOLOGIN.c_str())) == 0)
 		{
-			SetCurrentMode(Mode::Login);
+			SetCurrentMode(Mode::LOGIN);
 		}
-		else if ((strcmp(Buffer, CalcServer::Result::LoginFlag::LOGIN.c_str())) == 0)
+		else if ((strcmp(Buffer, CalcServer::Respond::LoginFlag::LOGIN.c_str())) == 0)
 		{
-			SetCurrentMode(Mode::Calc);
+			std::cout << "CLIENT::ALARM::Already Login" << std::endl;
+			std::cout << "CLIENT::ALARM::Press Any Key To Move CALC" << std::endl;
+			system("pause");
+			SetCurrentMode(Mode::CALC);
 		}
 	}
+
+
+
 	// 회원가입 버튼을 눌렀을 때의 동작입니다.
 	else if (SelectValue == Select::SIGNUP)
 	{
 		strcpy_s(Buffer, "REQUEST LOGIN FLAG");
 
 		// 서버에게 로그인 정보를 달라고 요청합니다.
-		if (send(ClientSocket, Buffer, sizeof(Buffer), 0) == SOCKET_ERROR)
-		{
-			std::cout << "ERROR::SEND Fail In ProcessMainMode" << std::endl;
-			exit(1);
-		}
+		SendToServer();
 
-		// 서버로부터 로그인 정보를 받아옵니다.
-		if (recv(ClientSocket, Buffer, sizeof(Buffer), 0) == SOCKET_ERROR)
+		// 서버로부터 로그인 정보를 받아와 파싱을 수행합니다.
+		RecvFromServer();
+		if ((strcmp(Buffer, CalcServer::Respond::LoginFlag::NOLOGIN.c_str())) == 0)
 		{
-			std::cout << "ERROR::RECV Fail In ProcessMainMode" << std::endl;
-			exit(1);
+			SetCurrentMode(Mode::SIGNUP);
 		}
-
-		// 로그인 정보에 대한 파싱을 수행합니다.
-		if ((strcmp(Buffer, CalcServer::Result::LoginFlag::NOLOGIN.c_str())) == 0)
+		else if ((strcmp(Buffer, CalcServer::Respond::LoginFlag::LOGIN.c_str())) == 0)
 		{
-			SetCurrentMode(Mode::SignUp);
-		}
-		else if ((strcmp(Buffer, CalcServer::Result::LoginFlag::LOGIN.c_str())) == 0)
-		{
+			std::cout << "CLIENT::ALARM::Already Login" << std::endl;
+			system("pause");
 			SetCurrentMode(Mode::MAIN);
 		}
 	}
+
+
+
 	// 계산 버튼을 눌렀을 때의 동작입니다.
 	else if (SelectValue == Select::CALC)
 	{
 		strcpy_s(Buffer, "REQUEST LOGIN FLAG");
 
 		// 서버에게 로그인 정보를 달라고 요청합니다.
-		if (send(ClientSocket, Buffer, sizeof(Buffer), 0) == SOCKET_ERROR)
-		{
-			std::cout << "ERROR::SEND Fail With Message In ProcessMainMode" << std::endl;
-			exit(1);
-		}
+		SendToServer();
 
-		// 서버로부터 로그인 정보를 받아옵니다.
-		if (recv(ClientSocket, Buffer, sizeof(Buffer), 0) == SOCKET_ERROR)
+		// 서버로부터 로그인 정보를 받아와 파싱합니다.
+		RecvFromServer();
+		if ((strcmp(Buffer, CalcServer::Respond::LoginFlag::NOLOGIN.c_str())) == 0)
 		{
-			std::cout << "ERROR::RECV Fail In ProcessMainMode" << std::endl;
-			exit(1);
+			SetCurrentMode(Mode::LOGIN);
 		}
-
-		// 로그인 정보에 대한 파싱을 수행하니다.
-		if ((strcmp(Buffer, CalcServer::Result::LoginFlag::NOLOGIN.c_str())) == 0)
+		else if ((strcmp(Buffer, CalcServer::Respond::LoginFlag::LOGIN.c_str())) == 0)
 		{
-			SetCurrentMode(Mode::Login);
-		}
-		else if ((strcmp(Buffer, CalcServer::Result::LoginFlag::LOGIN.c_str())) == 0)
-		{
-			SetCurrentMode(Mode::Calc);
+			SetCurrentMode(Mode::CALC);
 		}
 
 	}
+
+
+
 	// 나가기 버튼을 눌렀을 때의 동작입니다.
 	else if (SelectValue == Select::QUIT)
 	{
 		std::cout << "QUIT::Application Will Be Exit" << std::endl;
 		strcpy_s(Buffer, CalcClient::Request::DISCONNECT.c_str());
-		if (send(ClientSocket, Buffer, sizeof(Buffer), 0) == SOCKET_ERROR)
-		{
-			std::cout << "ERROR::SEND Fail In " << __func__ << std::endl;
-		}
+		SendToServer();
 		exit(1);
 	}
+
+
+
+	// 암호화 모드를 눌렀을 떄의 동작입니다.
+	else if (SelectValue == Select::ENCRYPT)
+	{
+		SetCurrentMode(Mode::ENCRYPT);
+	}
+
+
+
 	// 초기화 에러시 나타나는 항목입니다.
 	else if (SelectValue == Select::NONE)
 	{
@@ -226,6 +234,9 @@ void CalcClient::ProcessMainMode()
 		std::cout << "CLINET::ALARM::NONE Means System Maybe Exposes Cautions" << std::endl;
 		system("pause");
 	}
+
+
+
 	// 잘못된 값 입력시 나타나는 항목입니다.
 	else
 	{
@@ -249,43 +260,27 @@ void CalcClient::ProcessLoginMode()
 
 	// 서버에게 사용자 정보를 보낼 것이라고 알립니다.
 	strcpy_s(Buffer, "REQUEST USER LOGIN");
-	if (send(ClientSocket, Buffer, sizeof(Buffer), 0) == SOCKET_ERROR)
-	{
-		std::cout << "CLIENT::ERROR::SEND Fail With Message In " << __func__ << std::endl;
-		exit(1);
-	}
+	SendToServer();
 
 	// ID와 비밀번호를 서버로 전송합니다.
 	strcpy_s(Buffer, UserID.c_str());
-	if (send(ClientSocket, Buffer, sizeof(Buffer), 0) == SOCKET_ERROR)
-	{
-		std::cout << "CLIENT::ERROR::SEND Fail With ID In " << __func__ << std::endl;
-		exit(1);
-	}
+	SendToServer();
+	
 	strcpy_s(Buffer, UserPW.c_str());
-	if (send(ClientSocket, Buffer, sizeof(Buffer), 0) == SOCKET_ERROR)
-	{
-		std::cout << "CLIENT::ERROR::SEND Fail With PW In " << __func__ << std::endl;
-		exit(1);
-	}
+	SendToServer();
 
 	// 서버로부터 로그인에 대한 결과를 가져옵니다.
-	if (recv(ClientSocket, Buffer, sizeof(Buffer), 0) == SOCKET_ERROR)
-	{
-		std::cout << "CLIENT::ERROR::RECV Fail In " << __func__ << std::endl;
-		exit(1);
-	}
-	
+	RecvFromServer();
 	// 로그인 결과에 대한 파싱을 수행합니다.
-	if (strcmp(Buffer, CalcServer::Result::Login::MISMATCH.c_str()) == 0)
+	if (strcmp(Buffer, CalcServer::Respond::Login::MISMATCH.c_str()) == 0)
 	{
 		std::cout << std::endl;
-		std::cout << "CLIENT::WARN::Input Mismatch" << std::endl;
+		std::cout << "CLIENT::ALARM::Input Mismatch" << std::endl;
 		system("pause");
 		
 		SetCurrentMode(Mode::MAIN);
 	}
-	else if (strcmp(Buffer, CalcServer::Result::Login::SUCCESS.c_str()) == 0)
+	else if (strcmp(Buffer, CalcServer::Respond::Login::SUCCESS.c_str()) == 0)
 	{
 		std::cout << std::endl;
 		std::cout << "CLIENT::ALARM::Login Success" << std::endl;
@@ -315,35 +310,18 @@ void CalcClient::ProcessSignUpMode()
 
 	// 서버에게 회원가입 정보를 보낼 것이라고 알립니다.
 	strcpy_s(Buffer, "REQUEST USER SIGNUP");
-	if (send(ClientSocket, Buffer, sizeof(Buffer), 0) == SOCKET_ERROR)
-	{
-		std::cout << "CLIENT::ERROR::SEND Fail With Message In " << __func__ << std::endl;
-		exit(1);
-	}
+	SendToServer();
 
 	// ID와 비밀번호를 서버로 전송합니다.
 	strcpy_s(Buffer, UserID.c_str());
-	if (send(ClientSocket, Buffer, sizeof(Buffer), 0) == SOCKET_ERROR)
-	{
-		std::cout << "CLIENT::ERROR::SEND Fail With ID In " << __func__ << std::endl;
-		exit(1);
-	}
+	SendToServer();
 	strcpy_s(Buffer, UserPW.c_str());
-	if (send(ClientSocket, Buffer, sizeof(Buffer), 0) == SOCKET_ERROR)
-	{
-		std::cout << "ERROR::SEND Fail With PW In " << __func__ << std::endl;
-		exit(1);
-	}
+	SendToServer();
 
 	// 서버로부터 회원가입에 대한 결과를 가져옵니다.
-	if (recv(ClientSocket, Buffer, sizeof(Buffer), 0) == -1)
-	{
-		std::cout << "ERROR::RECV Fail In ProcessSignUpMode" << std::endl;
-		exit(1);
-	}
-
+	RecvFromServer();
 	// 로그인 결과에 대한 파싱을 수행합니다.
-	if (strcmp(Buffer, CalcServer::Result::SignUp::IDALREADY.c_str()) == 0)
+	if (strcmp(Buffer, CalcServer::Respond::SignUp::IDALREADY.c_str()) == 0)
 	{
 		std::cout << std::endl;
 		std::cout << "CLIENT::ALARM::ID Already Exist" << std::endl;
@@ -351,7 +329,7 @@ void CalcClient::ProcessSignUpMode()
 
 		SetCurrentMode(Mode::MAIN);
 	}
-	else if (strcmp(Buffer, CalcServer::Result::SignUp::SUCCESS.c_str()) == 0)
+	else if (strcmp(Buffer, CalcServer::Respond::SignUp::SUCCESS.c_str()) == 0)
 	{
 		std::cout << std::endl;
 		std::cout << "CLIENT::ALARM::SignUp Success" << std::endl;
@@ -378,43 +356,28 @@ void CalcClient::ProcessCalcMode()
 	
 	// 서버에게 정수값을 보낼 것이라고 알립니다.
 	strcpy_s(Buffer, "REQUEST INTEGER VALUE");
-	if (send(ClientSocket, Buffer, sizeof(Buffer), 0) == SOCKET_ERROR)
-	{
-		std::cout << "CLIENT::ERROR::SEND Fail With Message In " << __func__ << std::endl;
-		exit(1);
-	}
+	SendToServer();
 
 	// 서버에게 정수값을 보냅니다.
 	strcpy_s(Buffer, std::to_string(Value).c_str());
-	if (send(ClientSocket, Buffer, sizeof(Buffer), 0) == SOCKET_ERROR)
-	{
-		std::cout << "CLIENT::ERROR::SEND Fail With Value In " << __func__ << std::endl;
-		exit(1);
-	}
+	SendToServer();
 
 	// 서버로부터 계산 결과 메시지와 정수값을 가져옵니다.
-	if (recv(ClientSocket, Buffer, sizeof(Buffer), 0) == SOCKET_ERROR)
-	{
-		std::cout << "CLIENT::ERROR::RECV Fail In " << __func__ << std::endl;
-		exit(1);
-	}
+	RecvFromServer();
 
 	// 계산 결과 메시지에 대한 파싱을 수행합니다.
-	if (strncmp(Buffer, CalcServer::Result::Calc::SUCCESS.c_str(), 20) == 0)
+	if (strncmp(Buffer, CalcServer::Respond::Calc::SUCCESS.c_str(), 20) == 0)
 	{
 		// 계산 결과값을 받아옵니다.
-		if (recv(ClientSocket, Buffer, sizeof(Buffer), 0) == SOCKET_ERROR)
-		{
-			std::cout << "CLIENT::ERROR::RECV Fail In " << __func__ << std::endl;
-			exit(1);
-		}
+		RecvFromServer();
+
 		std::string IntegerValue = Buffer;
-		std::cout << "CLINET::ALARM::Squared Value is " << IntegerValue << std::endl;
+		std::cout << "CLIENT::ALARM::Squared Value is " << IntegerValue << std::endl;
 		system("pause");
 
 		SetCurrentMode(Mode::MAIN);
 	}
-	else if (strcmp(Buffer, CalcServer::Result::Calc::NONVALID.c_str()) == 0)
+	else if (strcmp(Buffer, CalcServer::Respond::Calc::NONVALID.c_str()) == 0)
 	{
 		std::cout << "CLIENT::ALARM::Invalid Input Value" << std::endl;
 		system("pause");
@@ -428,6 +391,86 @@ void CalcClient::ProcessCalcMode()
 	}
 }
 
+void CalcClient::ProcessEncryptMode()
+{
+	enum class Select
+	{
+		NONE, AES, DH, RSA, OPENSSL, EXIT
+	};
+
+	// UI를 출력하고 값을 입력 받습니다.
+	pClientUI->PrintEncryptUI();
+	pClientUI->PrintIntInterface();
+
+	int Value;
+	std::cin >> Value;
+	
+	Select SelectValue = static_cast<Select>(Value);
+	Encryptor::EMode ClientEMode;
+
+	// 유저가 선택한 값에 따라서 암호 모듈을 설정합니다.
+	if (SelectValue == Select::NONE)
+	{	
+		ClientEMode = Encryptor::EMode::NONE;
+	}
+	else if (SelectValue == Select::AES)
+	{
+		ClientEMode = Encryptor::EMode::AES;
+	}
+	else if (SelectValue == Select::DH)
+	{
+		ClientEMode = Encryptor::EMode::DH;
+	}
+	else if (SelectValue == Select::RSA)
+	{
+		ClientEMode = Encryptor::EMode::RSA;
+	}
+	else if (SelectValue == Select::OPENSSL)
+	{
+		// TODO : 구현할 것
+	}
+	else if (SelectValue == Select::EXIT)
+	{
+		SetCurrentMode(Mode::MAIN);
+	}
+	else
+	{
+		std::cout << "CLIENT::ERROR::Invalid Select Value in " << __func__ << std::endl;
+		exit(1);
+	}
+
+	SetEncryptFlagWithEMode(ClientEMode);
+
+	// 서버에게 같은 암호화 방식을 수립해달라고 요청합니다.
+	strcpy_s(Buffer, Request::SYNCENCRYPT.c_str());
+	SendToServer();
+
+	// 서버에게 현재 사용하는 암호화 알고리즘을 전송합니다.
+	std::string EncryptString = std::to_string(static_cast<int>(ClientEMode));
+	strcpy_s(Buffer, EncryptString.c_str());
+	SendToServer();
+
+
+
+	// 서버로부터 암호화 방식 요청에 대한 답변을 수신합니다.
+	RecvFromServer();
+	if (strcmp(Buffer, CalcServer::Respond::Encrypt::REJECT.c_str()) == 0)
+	{
+		ClientEncryptor->ChangeModule(Encryptor::EMode::NONE);
+		bActiveEncrypt = false;
+		
+		std::cout << "CLIENT::ALARM::Server Reject Submitted Encryption Method in " << __func__ << std::endl;
+		system("pause");
+	}
+	else if (strcmp(Buffer, CalcServer::Respond::Encrypt::ACCEPT.c_str()) == 0)
+	{
+		std::cout << "CLINET::ALARM::Server Accept" << std::endl;
+		system("pause");
+	}
+	
+	SetCurrentMode(Mode::MAIN);
+}
+
 void CalcClient::SetCurrentMode(Mode InMode)
 {
 	CurrentMode = InMode;
@@ -438,8 +481,70 @@ CalcClient::Mode CalcClient::GetCurrentMode() const
 	return CurrentMode;
 }
 
-std::string const CalcClient::Request::LOGINFLAG("REQUEST LOGIN FLAG");
-std::string const CalcClient::Request::USERLOGIN("REQUEST USER LOGIN");
-std::string const CalcClient::Request::USERSIGNUP("REQUEST USER SIGNUP");
-std::string const CalcClient::Request::INTEGERVALUE("REQUEST INTEGER VALUE");
-std::string const CalcClient::Request::DISCONNECT("REQUEST DISCONNECT");
+const SOCKET * CalcClient::GetServerSocket() const
+{
+	return &ServerSocket;
+}
+
+void CalcClient::SetEncryptFlagWithEMode(Encryptor::EMode InEMode)
+{
+	if (InEMode == Encryptor::EMode::NONE)
+	{
+		bActiveEncrypt = false;
+		ClientEncryptor->ChangeModule(InEMode);
+	}
+	else
+	{
+		bActiveEncrypt = true;
+		ClientEncryptor->ChangeModule(InEMode);
+	}
+}
+
+void CalcClient::WriteBufferWithMode(std::string InText)
+{
+	// 클라이언트가 암호화 모드일 경우입니다.
+	if (bActiveEncrypt == true)
+	{
+		std::string CipherText;
+
+		ClientEncryptor->ToCipher(CipherText, InText);
+		strcpy_s(Buffer, CipherText.c_str());
+
+		return;
+	}
+
+	// 아무런 모드가 적용되지 않았을 때 경우입니다.
+	strcpy_s(Buffer, InText.c_str());
+}
+
+std::string CalcClient::ReadBufferWIthMode()
+{
+	std::string FinalString;
+
+	// 클라이언트가 암호화 모드일 경우입니다.
+	if (bActiveEncrypt == true)
+	{
+		ClientEncryptor->ToPlain(FinalString, Buffer);
+		return FinalString;
+	}
+
+	return Buffer;
+}
+
+void CalcClient::SendToServer()
+{
+	if (send(ServerSocket, Buffer, sizeof(Buffer), 0) == SOCKET_ERROR)
+	{
+		std::cout << "CLIENT::ERROR::SEND Fail With Message In " << __func__ << std::endl;
+		exit(1);
+	}
+}
+
+void CalcClient::RecvFromServer()
+{
+	if (recv(ServerSocket, Buffer, sizeof(Buffer), 0) == SOCKET_ERROR)
+	{
+		std::cout << "ERROR::RECV Fail In ProcessMainMode" << std::endl;
+		exit(1);
+	}
+}

@@ -5,6 +5,7 @@
 
 #include <combaseapi.h>
 #include <memory>
+#include <string>
 
 
 
@@ -12,7 +13,7 @@
 // DEFINE SECTION
 //////////////////////////////////////////////////////////////
 
-#define BUFFERSIZE 256
+constexpr int BUFFERSIZE = 256;
 
 
 
@@ -20,13 +21,18 @@
 // TYPEDEF SECTION
 //////////////////////////////////////////////////////////////
 
-typedef char NetBuffer[256];
-
-
 
 //////////////////////////////////////////////////////////////
 // CLASS SECTION
 //////////////////////////////////////////////////////////////
+
+/*
+ * INetDelegateComponent는 소켓을 가지지 않아 네트워크 통신이
+ * 불가능한 클래스에 대해 네트워크 소켓과 버퍼를 전달받아
+ * 네트워크 통신을 가능하게 하는 인터페이스입니다.
+ *
+ *
+ */
 interface INetDelegateComponent
 {
 public:
@@ -34,12 +40,22 @@ public:
 	virtual bool RequireCommunication() = 0;
 
 	 //소켓을 받아와 통신을 수행합니다.
-	virtual void Send(SOCKET InSocket, const char* InBuffer)
+	virtual void Send(std::string InBuffer)
 	{
 		return;
 	}
 
-	virtual void Recv(SOCKET InSocket,const char* OutBuffer)
+	virtual const char* Recv()
+	{
+		return nullptr;
+	}
+
+	virtual const SOCKET* GetSocket() const
+	{
+		return nullptr;
+	}
+
+	virtual void SetSocket(SOCKET* InSocket)
 	{
 		return;
 	}
@@ -47,18 +63,35 @@ public:
 
 
 
-class NetAvailble : public INetDelegateComponent
+class NetAvailable : public INetDelegateComponent
 {
+
+public:
+	NetAvailable(const SOCKET* InSocket);
+
 	// INetworkComponent을(를) 통해 상속됨
 	virtual bool RequireCommunication() override;
-	virtual void Send(SOCKET InSocket, const char* InBuffer) override;
-	virtual void Recv(SOCKET InSocket, const char* OutBuffer) override;
+	virtual void Send(std::string InBuffer);
+	virtual const char* Recv();
+
+
+
+	virtual const SOCKET* GetSocket() const;		// SOCKET 액세서 (변경 불가)
+	virtual void SetSocket(SOCKET* InSocket);		// SOCKET 뮤테이터
+
+private:
+	// 상대방의 소켓 정보입니다.
+	const SOCKET * DeleSocket;
+		
+	// 네트워크 컴포넌트의 허가가 있을 시 할당되는 전용 버퍼입니다.
+	char PrivateBuffer[BUFFERSIZE];
 };
 
 
 
 class NoNetAvailable : public INetDelegateComponent
 {
+public:
 	// INetworkComponent을(를) 통해 상속됨
 	virtual bool RequireCommunication() override;
 };

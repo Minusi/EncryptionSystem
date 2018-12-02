@@ -7,18 +7,19 @@
 #include <memory>
 #include <cstdio>
 
+#include "Encryption\Encryptor.h"
 #include "NetBase.h"
 #include "CalcUI.h"
 #include "Server\CalcServer.h"
 
 
+
 class CalcClient
 {
-#define BUFFERSIZE 256
 public:
 	enum class Mode
 	{
-		NONE, MAIN, Login, SignUp, Calc
+		NONE, MAIN, LOGIN, SIGNUP, CALC, ENCRYPT
 	};
 	
 	struct Request
@@ -29,6 +30,7 @@ public:
 		static std::string const USERSIGNUP;
 		static std::string const INTEGERVALUE;
 		static std::string const DISCONNECT;
+		static std::string const SYNCENCRYPT;
 	};
 
 private:
@@ -53,16 +55,35 @@ public:
 
 
 	void ProcessMode();						// 현재 클라이언트 상태를 처리합니다.
-	void ProcessMainMode();					// 메인 모드 상태를 처리합니다.
-	void ProcessLoginMode();				// 로그인 모드 상태를 처리합니다.
-	void ProcessSignUpMode();				// 회원가입 모드 상태를 처리합니다.
-	void ProcessCalcMode();					// 계산 모드 상태를 처리합니다.
 
 	void SetCurrentMode(Mode InMode);		// CurrentMode의 뮤테이터
 	Mode GetCurrentMode() const;			// CurrentMode의 액세서
 
+	const SOCKET* GetServerSocket() const;	// 서버 소켓에 대한 참조를 반환합니다.
+
 private:
-	SOCKET ClientSocket;					//********************
+	// Encryptor의 모드에 따라 T/F를 설정합니다.
+	void SetEncryptFlagWithEMode(Encryptor::EMode InEMode);
+
+	// 클라이언트 모드에 따른 버퍼 쓰기를 수행합니다.				
+	void WriteBufferWithMode(std::string InText);
+
+	// 클라이언트 모드에 따른 버퍼 읽기를 수행합니다.
+	std::string ReadBufferWIthMode();
+
+	void SendToServer();					// 서버로 메시지를 보냅니다.
+	void RecvFromServer();					// 서버로부터 메시지를 받습니다.
+
+
+
+	void ProcessMainMode();					// 메인 모드 상태를 처리합니다.
+	void ProcessLoginMode();				// 로그인 모드 상태를 처리합니다.
+	void ProcessSignUpMode();				// 회원가입 모드 상태를 처리합니다.
+	void ProcessCalcMode();					// 계산 모드 상태를 처리합니다.
+	void ProcessEncryptMode();				// 암호화 모드 상태를 처리합니다.
+
+private:
+	SOCKET ServerSocket;					//********************
 	WSADATA WSAData;						//클라이언트 소켓 섹션
 	SOCKADDRIN ClientSockInfo;				//********************
 
@@ -70,8 +91,14 @@ private:
 											//네트워크 접속 섹션
 	std::string ServerIP;					//******************
 
-	NetBuffer Buffer;						//네트워크 통신 버퍼
+	char Buffer[BUFFERSIZE];				//네트워크 통신 버퍼
 
 	std::shared_ptr<CalcUI> pClientUI;		//클라이언트 UI
 	Mode CurrentMode;						//클라이언트 현재 모드
+
+	//////////////////////
+	// 통신 암호화 모듈 //
+	//////////////////////
+	std::unique_ptr<class Encryptor> ClientEncryptor;
+	bool bActiveEncrypt;
 };

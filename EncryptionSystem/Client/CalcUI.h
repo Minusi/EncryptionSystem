@@ -23,6 +23,7 @@ public:
 	void PrintSignUpUI() const;			// 회원가입 UI를 출력합니다.
 	void PrintSignInUI() const;			// 로그인 UI를 출력합니다.
 	void PrintSquareUI() const;			// 제곱 UI를 출력합니다.
+	void PrintEncryptUI() const;		// 암호화 UI를 출력합니다.
 	
 	void PrintIDInterface() const;		// ID 입력을 받는 인터페이스를 출력합니다.
 	void PrintPWInterface() const;		// PW 입력을 받는 인터페이스를 출력합니다.

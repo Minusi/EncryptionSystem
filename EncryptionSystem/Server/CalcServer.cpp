@@ -3,7 +3,7 @@
 
 
 CalcServer::CalcServer()
-	:EncryptorPtr(new Encryptor())
+	: bActiveEncrypt(false)
 {
 	Init();
 }
@@ -139,6 +139,10 @@ void CalcServer::ParseClientData()
 	{
 		ProcessIntegerValue();
 	}
+	else if (strcmp(Buffer, CalcClient::Request::SYNCENCRYPT.c_str()) == 0)
+	{
+		ProcessEncryptMode();
+	}
 	// 클라이언트가 종료 플래그를 보내오면 종료합니다.
 	// TODO : 다중 유저 접속에 맞지 않는 코드이므로 그러한 요구가 발생하면 
 	// 코드를 재구성할 것
@@ -161,11 +165,11 @@ void CalcServer::ProcessLoginFlag()
 	// 로그인 여부를 검사합니다.
 	if (ConnectInfo.Authorized())
 	{
-		strcpy_s(Buffer, CalcServer::Result::LoginFlag::LOGIN.c_str());
+		strcpy_s(Buffer, CalcServer::Respond::LoginFlag::LOGIN.c_str());
 	}
 	else
 	{
-		strcpy_s(Buffer, CalcServer::Result::LoginFlag::NOLOGIN.c_str());
+		strcpy_s(Buffer, CalcServer::Respond::LoginFlag::NOLOGIN.c_str());
 	}
 
 #ifdef CONSOLE_DEBUG
@@ -204,11 +208,11 @@ void CalcServer::ProcessUserLogin()
 	if (bSuccessLogin == true)
 	{
 		ConnectInfo.Connect(NeedToCheckID);
-		strcpy_s(Buffer, CalcServer::Result::Login::SUCCESS.c_str());
+		strcpy_s(Buffer, CalcServer::Respond::Login::SUCCESS.c_str());
 	}
 	else
 	{
-		strcpy_s(Buffer, CalcServer::Result::Login::MISMATCH.c_str());
+		strcpy_s(Buffer, CalcServer::Respond::Login::MISMATCH.c_str());
 	}
 
 
@@ -247,14 +251,14 @@ void CalcServer::ProcessUserSignUp()
 	bool bNoExistID = UserDatabase.ExistID(NeedToCheckID);
 	if (bNoExistID == true)
 	{
-		strcpy_s(Buffer, CalcServer::Result::SignUp::SUCCESS.c_str());
+		strcpy_s(Buffer, CalcServer::Respond::SignUp::SUCCESS.c_str());
 
 		// 데이터베이스에 등록합니다.
 		UserDatabase.InsertIDAndPW(NeedToCheckID, NeedToCheckPW);
 	}
 	else
 	{
-		strcpy_s(Buffer, CalcServer::Result::SignUp::IDALREADY.c_str());
+		strcpy_s(Buffer, CalcServer::Respond::SignUp::IDALREADY.c_str());
 	}
 
 #ifdef CONSOLE_DEBUG
@@ -300,11 +304,11 @@ void CalcServer::ProcessIntegerValue()
 	std::string StringValue = std::to_string(SquareValue);
 	if (StringValue.empty())
 	{
-		strcpy_s(Buffer, Result::Calc::NONVALID.c_str());
+		strcpy_s(Buffer, Respond::Calc::NONVALID.c_str());
 	}
 	else
 	{
-		strcpy_s(Buffer, Result::Calc::SUCCESS.c_str());
+		strcpy_s(Buffer, Respond::Calc::SUCCESS.c_str());
 	}
 
 #ifdef CONSOLE_DEBUG
@@ -321,7 +325,7 @@ void CalcServer::ProcessIntegerValue()
 
 	std::string StringBuffer = Buffer;
 	// 계산이 성공했으면 계산 결과값도 전송합니다.
-	if (StringBuffer == Result::Calc::SUCCESS.c_str())
+	if (StringBuffer == Respond::Calc::SUCCESS.c_str())
 	{
 		std::string StringValue = std::to_string(SquareValue);
 		strcpy_s(Buffer, StringValue.c_str());
@@ -341,14 +345,59 @@ void CalcServer::ProcessIntegerValue()
 #endif // CONSOLE_DEBUG
 }
 
-std::string const CalcServer::Result::LoginFlag::NOLOGIN{ "RESPOND NOLOGIN" };
-std::string const CalcServer::Result::LoginFlag::LOGIN{ "RESPOND LOGIN" };
+void CalcServer::ProcessEncryptMode()
+{
+	// 클라이언트로부터 암호화 수립 요청을 수신합니다.
+	if (recv(ClientSock, Buffer, sizeof(Buffer), 0) == SOCKET_ERROR)
+	{
+		std::cout << "SERVER::ERROR::RECV Fail With ID In " << __func__ << std::endl;
+		exit(1);
+	}
 
-std::string const CalcServer::Result::Login::MISMATCH("RESPOND MISMATCH");
-std::string const CalcServer::Result::Login::SUCCESS("RESPOND LOGIN SUCCESS");
+	// 잘못된 메시지를 수신하면 종료합니다.
+	if (strcmp(Buffer, CalcClient::Request::SYNCENCRYPT.c_str()) != 0)
+	{
+		std::cout << "SERVER::ERROR::Client Send Invalid Message In " << __func__ << std::endl;
+		exit(1);
+	}
 
-std::string const CalcServer::Result::SignUp::IDALREADY("RESPOND ID ALREADY");
-std::string const CalcServer::Result::SignUp::SUCCESS("RESPOND SIGNUP SUCEESS");
+	// 클라이언트로부터 사용하는 암호화 알고리즘을 수신합니다.
+	if (recv(ClientSock, Buffer, sizeof(Buffer), 0) == SOCKET_ERROR)
+	{
+		std::cout << "SERVER::ERROR::RECV Fail With ID In " << __func__ << std::endl;
+		exit(1);
+	}
 
-std::string const CalcServer::Result::Calc::SUCCESS("RESPOND CALC SUCCESS");
-std::string const CalcServer::Result::Calc::NONVALID("RESPOND CALC NONVALID");
+	// 전송받은 암호화 모듈을 서버 암호화 모듈에 설정합니다.
+	Encryptor::EMode ServerEMode;
+	std::string EncryptString = Buffer;
+	ServerEMode = static_cast<Encryptor::EMode>(std::stoi(EncryptString));
+	
+	// 암호화 모듈이 NONE으로 설정되어 있다면 암호화 모드를 해제합니다.
+	if (ServerEMode == Encryptor::EMode::NONE)
+	{
+		bActiveEncrypt = false;
+	}
+	else
+	{
+		bActiveEncrypt = true;
+	}
+	ServerEncryptor->ChangeModule(ServerEMode);
+
+
+
+	// TODO : 추후에 서버가 클라이언트의 이러한 요청을 거부하게 될 경우,
+	// 이 곳에서 그 코드를 작성하기 바람.
+	// 클라이언트에게 요청 수립 메시지를 보낸다,
+	strcpy_s(Buffer, Respond::Encrypt::ACCEPT.c_str());
+	if (send(ClientSock, Buffer, sizeof(Buffer), 0) == SOCKET_ERROR)
+	{
+		std::cout << "SERVER::ERROR::SEND Fail With Value In " << __func__ << std::endl;
+		exit(1);
+	}
+}
+
+const SOCKET * CalcServer::GetClientSocket()
+{
+	return &ClientSock;
+}
