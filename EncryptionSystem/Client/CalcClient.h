@@ -62,7 +62,9 @@ public:
 	const SOCKET* GetServerSocket() const;	// 서버 소켓에 대한 참조를 반환합니다.
 
 private:
-	// Encryptor의 모드에 따라 T/F를 설정합니다.
+	// Encryptor의 초기화 수행 및 암호화 모드에 따라 T/F를 설정합니다.
+	// ClientEncryptor를 사용하기 위해서는 반드시 이 멤버 함수를 통해서
+	// 초기화가 이루어진 뒤여야 합니다.
 	void SetEncryptFlagWithEMode(Encryptor::EMode InEMode);
 
 	// 클라이언트 모드에 따른 버퍼 쓰기를 수행합니다.				

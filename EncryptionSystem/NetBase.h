@@ -6,6 +6,9 @@
 #include <combaseapi.h>
 #include <memory>
 #include <string>
+#include <iostream>
+
+#include "Debug\Debug.h"
 
 
 
@@ -62,30 +65,102 @@ public:
 };
 
 
-
+template< unsigned int N = 1>
 class NetAvailable : public INetDelegateComponent
 {
 
 public:
-	NetAvailable(const SOCKET* InSocket);
+	NetAvailable(const SOCKET * InSocket)
+		: DeleSocket{ InSocket }
+	{
+#ifdef CONSOLE_DEBUG
+		std::cout << "----------------------------------------------------------------------" << std::endl;
+		std::cout << CLASS_TAG << FUNC_TAG <<
+			"Buffer Size : " << sizeof(PrivateBuffer) << std::endl;
+		std::cout << "----------------------------------------------------------------------" << std::endl;
+#endif // CONSOLE_DEBUG
+
+	}
 
 	// INetworkComponent을(를) 통해 상속됨
-	virtual bool RequireCommunication() override;
-	virtual void Send(std::string InBuffer);
-	virtual const char* Recv();
+	bool RequireCommunication() override
+	{
+		return true;
+	}
+	
+
+
+	void Send(std::string InBuffer)
+	{
+		// 문자열이 비어있으면 전송하지 않습니다.
+		if (InBuffer.empty())
+		{
+			return;
+		}
+
+		// 오버플로우 발생시 전송하지 않습니다.
+		if (InBuffer.length() >= sizeof(PrivateBuffer))
+		{
+			return;
+		}
+
+		strcpy_s(PrivateBuffer, InBuffer.c_str());
+		if (send(*DeleSocket, PrivateBuffer, sizeof(PrivateBuffer), 0) == SOCKET_ERROR)
+		{
+			std::cout << "NETCOMP::ERROR::SEND Fail in " << __func__ << std::endl;
+			exit(1);
+		}
+
+
+#ifdef CONSOLE_DEBUG
+		CON_NEWLINE;
+		std::cout << CLASS_TAG << CON_DEBUG_TAG <<
+			"Buffer >> " << InBuffer.c_str() << " in " << __func__ << std::endl;
+#endif // CONSOLE_DEBUG
+	}
 
 
 
-	virtual const SOCKET* GetSocket() const;		// SOCKET 액세서 (변경 불가)
-	virtual void SetSocket(SOCKET* InSocket);		// SOCKET 뮤테이터
+	const char* Recv()
+	{
+		if (recv(*DeleSocket, PrivateBuffer, sizeof(PrivateBuffer), 0) == SOCKET_ERROR)
+		{
+			std::cout << "NETCOMP::ERROR::RECV Fail in " << __func__ << std::endl;
+			exit(1);
+		}
+
+#ifdef CONSOLE_DEBUG
+		CON_NEWLINE;
+		std::cout << CLASS_TAG << CON_DEBUG_TAG <<
+			"Buffer >> " << PrivateBuffer << " in " << __func__ << std::endl;
+#endif // CONSOLE_DEBUG
+
+		return PrivateBuffer;
+	}
+
+
+
+	const SOCKET* GetSocket() const
+	{
+		return DeleSocket;
+	}
+
+	void SetSocket(SOCKET * InSocket)
+	{
+		DeleSocket = InSocket;
+	}
+
+
 
 private:
 	// 상대방의 소켓 정보입니다.
 	const SOCKET * DeleSocket;
 		
 	// 네트워크 컴포넌트의 허가가 있을 시 할당되는 전용 버퍼입니다.
-	char PrivateBuffer[BUFFERSIZE];
+	char PrivateBuffer[BUFFERSIZE * N];
 };
+
+
 
 
 

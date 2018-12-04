@@ -34,7 +34,7 @@ public:
 	*/
 	enum class NetMode
 	{
-		NONE, HOST, GUSET
+		NONE, HOST, GUEST
 	};
 
 
@@ -46,6 +46,8 @@ public:
 	// EncryptionBase 클래스에서는 네트워크에 대한 초기화만 이루어지고
 	// 암호 모듈은 초기화를 하지 않습니다.
 	EncryptionBase(INetDelegateComponent* InNetDeleComp = nullptr);
+
+
 
 	// IEncryptable을(를) 통해 상속됨
 	virtual void Encrypt(std::string& OutCipherText, std::string InPlainText) = 0;

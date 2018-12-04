@@ -11,6 +11,7 @@
 #include "NetBase.h"
 #include "Client\CalcClient.h"
 #include "UserDB.h"
+#include "Debug\Macro.h"
 
 
 
@@ -95,6 +96,25 @@ private:
 
 	// 메인 루프를 처리하는 함수입니다,
 	void MainLoop();
+
+
+
+	// Encryptor의 초기화 수행 및 암호화 모드에 따라 T/F를 설정합니다.
+	// ServerEncryptor를 사용하기 위해서는 반드시 이 멤버 함수를 통해서
+	// 초기화가 이루어진 뒤여야 합니다.	
+	void SetEncryptFlagWithEMode(Encryptor::EMode InEMode);
+
+	// 클라이언트 모드에 따른 버퍼 쓰기를 수행합니다.				
+	void WriteBufferWithMode(std::string InText);
+
+	// 클라이언트 모드에 따른 버퍼 읽기를 수행합니다.
+	std::string ReadBufferWIthMode();
+
+	// 클라이언트로 메시지를 보냅니다.
+	void SendToClient();					
+
+	// 클라이언트로부터 메시지를 받습니다.
+	void RecvFromClient();					
 
 
 

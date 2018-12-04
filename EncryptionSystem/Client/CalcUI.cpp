@@ -71,9 +71,9 @@ void CalcUI::PrintEncryptUI() const
 		"=         1 . N O N E                      =\n"
 		"=         2 . A E S                        =\n"
 		"=         3 . D H                          =\n"
-		"=         5 . R S A                        =\n"
-		"=         6 . O P E N S S L                =\n"
-		"=         7 . E X I T                      =\n"
+		"=         4 . R S A                        =\n"
+		"=         5 . O P E N S S L                =\n"
+		"=         6 . E X I T                      =\n"
 		"============================================\n"
 		"\n"
 		<< std::endl;

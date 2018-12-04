@@ -11,7 +11,9 @@
 
 #include "Server\CalcServer.h"
 #include "Client\CalcClient.h"
+
 #include "Encryption\DH\DHEncryption.h"
+#include "Encryption\RSA\RSAEncryption.h"
 
 
 
@@ -50,10 +52,26 @@ std::string const CalcServer::Respond::Encrypt::REJECT("RESPOND REJECT");
 /**********************************************************************
  * DH에서 사용하는 네트워크 플래그 메시지
  **********************************************************************/
-std::string const DHEncryption::Message::Common::ACCEPT("ACCEPT");
-std::string const DHEncryption::Message::Common::RECVKEY("RECV KEY");
-std::string const DHEncryption::Message::Common::INVALIDKEY("RECV INVALID KEY");
+std::string const DHEncryption::Message::Common::ACCEPT("DH ACCEPT");
+std::string const DHEncryption::Message::Common::RECVKEY("DH RECV KEY");
+std::string const DHEncryption::Message::Common::INVALIDKEY("DH INVALID KEY");
 
-std::string const DHEncryption::Message::Host::SENDHOSTKEY("SEND HOST KEY");
+std::string const DHEncryption::Message::Host::SENDPRIMES("DH SEND PRIMES");
+std::string const DHEncryption::Message::Host::SENDHOSTKEY("DH SEND HOST KEY");
 
-std::string const DHEncryption::Message::Guest::SENDGUESTKEY("SEND GUEST KEY");
+std::string const DHEncryption::Message::Guest::INVALIDPRIMES("DH INVALID PRIMES");
+std::string const DHEncryption::Message::Guest::RECVPRIMES("DH RECV PRIMES");
+std::string const DHEncryption::Message::Guest::SENDGUESTKEY("DH SEND GUEST KEY");
+
+
+
+/**********************************************************************
+ * RSA에서 사용하는 네트워크 플래그 메시지
+ **********************************************************************/
+std::string const RSAEncryption::Message::Common::ACCEPT("RSA ACCEPT");
+std::string const RSAEncryption::Message::Common::RECVKEY("RSA RECV KEY");
+std::string const RSAEncryption::Message::Common::INVALIDKEY("RSA INVALID KEY");
+
+std::string const RSAEncryption::Message::Host::SENDHOSTKEY("RSA SEND HOST KEY");
+
+std::string const RSAEncryption::Message::Guest::SENDGUESTKEY("RSA SEND GUEST KEY");

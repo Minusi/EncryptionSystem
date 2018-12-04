@@ -2,6 +2,7 @@
 
 #include <string>
 #include <memory>
+#include <iostream>
 
 #include "EncryptionBase.h"
 #include "DH\DHEncryption.h"
@@ -9,6 +10,8 @@
 #include "Symmetric\AESEncryption.h"
 
 #include "NetBase.h"
+#include "Debug\Macro.h"
+
 
 
 /*
@@ -37,18 +40,25 @@ public:
 	 */
 	enum class EMode
 	{
-		NONE, AES, DH, RSA
+		NONE, AES, DH, RSA, OPENSSL
 	};
 public:
 	// Encryptor 생성자입니다.
 	// 지정한 모드로 암호 모듈을 생성하고 초기화를 수행합니다.
-	Encryptor(const SOCKET* InSocket = nullptr, EMode InMode = EMode::NONE);
+	Encryptor(const SOCKET* InSocket = nullptr);
 
 	// Encryptor 소멸자입니다.
 	~Encryptor() = default;
 
 	// 입력한 모드를 가진 암호 모듈로 교체합니다.
 	void ChangeModule(EMode InMode = EMode::NONE);
+
+	// 암호 모듈에 네트워크 모드를 부여합니다.
+	// 암호 모듈의 모든 초기화는 생성자의 호출과 
+	// 함께 진행되므로 네트워크 기능도 생성자 매개변수에
+	// 포함되어야 하므로, 암호 모듈의 생성 이전에
+	// 호출해야 합니다.
+	void CoInitNetworkMode(EncryptionBase::NetMode InNetMode);
 
 
 
@@ -65,9 +75,19 @@ private:
 
 
 private:
+	// 네트워크 호스트로부터 전달받은 소켓 인자입니다.
+	// 암호자의 생성과 함께 초기화되며, 이후 변경불가입니다.
 	const SOCKET* PassSocket;
 
+	// 네트워크 지원 암호화 모듈에 전달할 네트워크 모드입니다.
+	// 네트워크를 사용하는 암호 모듈의 생성 이전에 호출되어 
+	// 암호 모듈의 생성자의 매개변수에 함께 삽입되어야 합니다.
+	EncryptionBase::NetMode PassNetMode;
+
+	// 현재 사용중인 암호화 알고리즘 모드입니다.
 	EMode EncryptionMode;
+
+	// 현재 등록된 암,복호화 기능을 수행하는 알고리즘입니다.
 	std::unique_ptr<EncryptionBase> EncryptionModule;
 };
 

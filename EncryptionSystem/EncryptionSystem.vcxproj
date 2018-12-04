@@ -173,6 +173,7 @@
   <ItemGroup>
     <ClCompile Include="Client\CalcClient.cpp" />
     <ClCompile Include="Client\CalcUI.cpp" />
+    <ClCompile Include="Encryption\CryptoUtil.cpp" />
     <ClCompile Include="Encryption\DH\DHEncryption.cpp" />
     <ClCompile Include="Encryption\EncryptionBase.cpp" />
     <ClCompile Include="Encryption\Encryptor.cpp" />
@@ -188,6 +189,8 @@
     <ClInclude Include="Client\CalcClient.h" />
     <ClInclude Include="Client\CalcUI.h" />
     <ClInclude Include="Debug\Debug.h" />
+    <ClInclude Include="Debug\Macro.h" />
+    <ClInclude Include="Encryption\CryptoUtil.h" />
     <ClInclude Include="Encryption\DH\DHEncryption.h" />
     <ClInclude Include="Encryption\EncryptionBase.h" />
     <ClInclude Include="Encryption\Encryptor.h" />
