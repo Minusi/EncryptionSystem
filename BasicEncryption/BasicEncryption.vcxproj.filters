@@ -1,0 +1,109 @@
+﻿<?xml version="1.0" encoding="utf-8"?>
+<Project ToolsVersion="4.0" xmlns="http://schemas.microsoft.com/developer/msbuild/2003">
+  <ItemGroup>
+    <Filter Include="리소스 파일">
+      <UniqueIdentifier>{67DA6AB6-F800-4c08-8B7A-83BB121AAD01}</UniqueIdentifier>
+      <Extensions>rc;ico;cur;bmp;dlg;rc2;rct;bin;rgs;gif;jpg;jpeg;jpe;resx;tiff;tif;png;wav;mfcribbon-ms</Extensions>
+    </Filter>
+    <Filter Include="소스 파일">
+      <UniqueIdentifier>{67164ac5-b204-4b09-9a68-17d6934a39bd}</UniqueIdentifier>
+    </Filter>
+    <Filter Include="소스 파일\CryptoState">
+      <UniqueIdentifier>{684032a7-84b5-4efa-95d3-cdbf3755dbca}</UniqueIdentifier>
+    </Filter>
+    <Filter Include="소스 파일\Encryptor">
+      <UniqueIdentifier>{db3ded20-d261-4ed4-95b1-3839d9602956}</UniqueIdentifier>
+    </Filter>
+    <Filter Include="소스 파일\CryptoState\CBC">
+      <UniqueIdentifier>{274274ea-5e42-4111-bdbb-29682c459844}</UniqueIdentifier>
+    </Filter>
+    <Filter Include="소스 파일\CryptoState\ECB">
+      <UniqueIdentifier>{98537e79-20a1-4a2c-ae4e-d12c85e824ec}</UniqueIdentifier>
+    </Filter>
+    <Filter Include="소스 파일\CryptoState\CTR">
+      <UniqueIdentifier>{e6c01662-59a0-4fac-bad8-8225040db66d}</UniqueIdentifier>
+    </Filter>
+  </ItemGroup>
+  <ItemGroup>
+    <ClCompile Include="Main.cpp">
+      <Filter>소스 파일</Filter>
+    </ClCompile>
+    <ClCompile Include="Source\Encryptor.cpp">
+      <Filter>소스 파일\Encryptor</Filter>
+    </ClCompile>
+    <ClCompile Include="Source\GlobalConfig.cpp">
+      <Filter>소스 파일</Filter>
+    </ClCompile>
+    <ClCompile Include="Source\TDESnCBCState.cpp">
+      <Filter>소스 파일\CryptoState\CBC</Filter>
+    </ClCompile>
+    <ClCompile Include="Source\DESnCBCState.cpp">
+      <Filter>소스 파일\CryptoState\CBC</Filter>
+    </ClCompile>
+    <ClCompile Include="Source\AESnCBCState.cpp">
+      <Filter>소스 파일\CryptoState\CBC</Filter>
+    </ClCompile>
+    <ClCompile Include="Source\AESnECBState.cpp">
+      <Filter>소스 파일\CryptoState\ECB</Filter>
+    </ClCompile>
+    <ClCompile Include="Source\DESnECBState.cpp">
+      <Filter>소스 파일\CryptoState\ECB</Filter>
+    </ClCompile>
+    <ClCompile Include="Source\TDESnECBState.cpp">
+      <Filter>소스 파일\CryptoState\ECB</Filter>
+    </ClCompile>
+    <ClCompile Include="Source\AESnCTRState.cpp">
+      <Filter>소스 파일\CryptoState\CTR</Filter>
+    </ClCompile>
+    <ClCompile Include="Source\DESnCTRState.cpp">
+      <Filter>소스 파일\CryptoState\CTR</Filter>
+    </ClCompile>
+    <ClCompile Include="Source\TDESnCTRState.cpp">
+      <Filter>소스 파일\CryptoState\CTR</Filter>
+    </ClCompile>
+    <ClCompile Include="Sub.cpp">
+      <Filter>소스 파일</Filter>
+    </ClCompile>
+  </ItemGroup>
+  <ItemGroup>
+    <ClInclude Include="Source\ICryptoState.h">
+      <Filter>소스 파일\CryptoState</Filter>
+    </ClInclude>
+    <ClInclude Include="Source\GlobalConfig.h">
+      <Filter>소스 파일</Filter>
+    </ClInclude>
+    <ClInclude Include="Source\IEncryptor.h">
+      <Filter>소스 파일\Encryptor</Filter>
+    </ClInclude>
+    <ClInclude Include="Source\Encryptor.h">
+      <Filter>소스 파일\Encryptor</Filter>
+    </ClInclude>
+    <ClInclude Include="Source\TDESnCBCState.h">
+      <Filter>소스 파일\CryptoState\CBC</Filter>
+    </ClInclude>
+    <ClInclude Include="Source\AESnCBCState.h">
+      <Filter>소스 파일\CryptoState\CBC</Filter>
+    </ClInclude>
+    <ClInclude Include="Source\DESnCBCState.h">
+      <Filter>소스 파일\CryptoState\CBC</Filter>
+    </ClInclude>
+    <ClInclude Include="Source\AESnECBState.h">
+      <Filter>소스 파일\CryptoState\ECB</Filter>
+    </ClInclude>
+    <ClInclude Include="Source\DESnECBState.h">
+      <Filter>소스 파일\CryptoState\ECB</Filter>
+    </ClInclude>
+    <ClInclude Include="Source\TDESnECBState.h">
+      <Filter>소스 파일\CryptoState\ECB</Filter>
+    </ClInclude>
+    <ClInclude Include="Source\AESnCTRState.h">
+      <Filter>소스 파일\CryptoState\CTR</Filter>
+    </ClInclude>
+    <ClInclude Include="Source\DESnCTRState.h">
+      <Filter>소스 파일\CryptoState\CTR</Filter>
+    </ClInclude>
+    <ClInclude Include="Source\TDESnCTRState.h">
+      <Filter>소스 파일\CryptoState\CTR</Filter>
+    </ClInclude>
+  </ItemGroup>
+</Project>
